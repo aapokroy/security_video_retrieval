@@ -1,0 +1,7 @@
+__pycache__
+notebooks
+env
+postgresql/data
+secrets
+videos
+vscode

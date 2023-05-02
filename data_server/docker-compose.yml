@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15.2-alpine
+    container_name: postgres_db
+    environment:
+      PGUSER: "postgres"
+      POSTGRES_PASSWORD_FILE: "/run/secrets/db_password"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./postgresql/init:/docker-entrypoint-initdb.d
+      - ./postgresql/data:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - "5433:5432" # Temp for debug
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
+      interval: 1s # Temp debug configuration
+      timeout: 3s
+      retries: 3
+      start_period: 1s
+    secrets:
+      - db_password
+  api:
+    image: flask_api
+    build: .
+    container_name: flask_api
+    environment:
+      DATABASE_PASSWORD_FILE: "/run/secrets/db_password"
+      FRAME_SIZE: 640x480
+      CHUNK_DURATION: 60
+      CHUNK_FPS: 1
+      DRAW_TIMESTAMP: 1
+    volumes:
+      - ./videos:/app/videos
+    restart: always
+    ports:
+      - "8080:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    secrets:
+      - db_password
+secrets:
+  db_password:
+    file: ./secrets/db_password
