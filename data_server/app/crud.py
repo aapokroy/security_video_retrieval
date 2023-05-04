@@ -76,6 +76,16 @@ async def read_video_chunk(session: AsyncSession, id: int) -> VideoChunk:
     return result.scalars().first()
 
 
+async def read_last_video_chunk(session: AsyncSession, source_id: int
+                                ) -> VideoChunk:
+    """Get last video chunk of the source."""
+    result = await session.execute(
+        select(VideoChunk).filter(VideoChunk.source_id == source_id)
+        .order_by(VideoChunk.start_time.desc())
+    )
+    return result.scalars().first()
+
+
 async def read_video_chunk_by_timestamp(session: AsyncSession,
                                         source_id: int,
                                         timestamp: float) -> VideoChunk:

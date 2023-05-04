@@ -75,6 +75,7 @@ class VideoCapture(SourceCapture):
         if self._cap is None or not self._cap.isOpened():
             raise ValueError('Can not open video capture')
         self.frames_total = int(self._cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.frames_total = self.frames_total if self.frames_total > 0 else 0
         self.source_fps = self._cap.get(cv2.CAP_PROP_FPS)
         return self
 

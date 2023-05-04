@@ -80,7 +80,7 @@ and send them to the RabbitMQ queue.
 app = FastAPI(
     title="CCTV Data Server",
     description=description,
-    version="0.1.0",
+    version="0.1.1",
     license_info={
         "name": "MIT License",
         "url": "https://opensource.org/licenses/mit-license.php"
@@ -97,6 +97,26 @@ async def root():
 
 
 # Source management
+@app.get(
+    "/sources/{id:int}",
+    response_model=schemas.Source,
+    tags=["Source management"],
+    summary="Get source by id",
+    response_description="Source found"
+)
+async def get_source(id: int, session: AsyncSession = Depends(get_session)):
+    """
+    Get source by id.
+
+    Parameters:
+    - **id**: source id
+    """
+    source = await crud.read_source(session, id)
+    if source is None:
+        raise HTTPException(status_code=404, detail="Source not found")
+    return source
+
+
 @app.get(
     "/sources/list",
     response_model=list[schemas.Source],
@@ -160,8 +180,8 @@ async def create_source_from_file(name: str,
     path = SOURCES_DIR / file_name
     count = 1
     while path.is_file():
-        name, ext = os.path.splitext(file_name)
-        path = SOURCES_DIR / f'{name}_{count}{ext}'
+        stem, ext = os.path.splitext(file_name)
+        path = SOURCES_DIR / f'{stem}_{count}{ext}'
         count += 1
     with open(path, 'wb') as out_file:
         while content := file.file.read(1024):
@@ -312,6 +332,31 @@ async def get_frame(source_id: int, timestamp: float,
     with VideoCapture(chunk.file_path) as cap:
         frame_number = int((timestamp - chunk.start_time) * CHUNK_FPS)
         cap.skip(frame_number)
+        frame = cap.read()
+        _, buffer = cv2.imencode('.jpg', frame)
+        return Response(content=buffer.tobytes(), media_type="image/jpeg")
+
+
+@app.get(
+    "/videos/get/frame/last",
+    tags=["Retrieve video data"],
+    summary="Get last frame",
+    response_description="Frame",
+    response_class=Response
+)
+async def get_last_frame(source_id: int,
+                         session: AsyncSession = Depends(get_session)):
+    """
+    Get last frame from source.
+
+    Parameters:
+    - **source_id**: source id
+    """
+    chunk = await crud.read_last_video_chunk(session, source_id)
+    if chunk is None:
+        raise HTTPException(status_code=404, detail="Frame not found")
+    with VideoCapture(chunk.file_path) as cap:
+        cap.skip(cap.frames_total - 1)
         frame = cap.read()
         _, buffer = cv2.imencode('.jpg', frame)
         return Response(content=buffer.tobytes(), media_type="image/jpeg")
