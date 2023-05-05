@@ -310,6 +310,27 @@ async def get_video_chunk(chunk_id: int,
 
 
 @app.get(
+    "/videos/get/time_coverage",
+    tags=["Retrieve video data"],
+    summary="Get all saved time intervals from source",
+    response_description="Video chunks",
+    response_model=list[tuple[float, float]]
+)
+async def get_time_coverage(source_id: int,
+                            session: AsyncSession = Depends(get_session)):
+    """
+    Get all saved time intervals from source.
+
+    Parameters:
+    - **source_id**: source id
+    """
+    chunks = await crud.read_video_chunks(session, source_id)
+    if chunks is None:
+        raise HTTPException(status_code=404, detail="Video chunks not found")
+    return [(chunk.start_time, chunk.end_time) for chunk in chunks]
+
+
+@app.get(
     "/videos/get/frame",
     tags=["Retrieve video data"],
     summary="Get frame by timestamp",

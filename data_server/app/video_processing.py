@@ -106,12 +106,16 @@ class VideoCapture(SourceCapture):
         """Skip amount of frames"""
         self.frames_read += amount
 
-    def read(self) -> np.ndarray:
+    def read(self, max_retries=5) -> np.ndarray:
         """
         Read next frame from source.
         If source is not stream and there is no next frame, returns None.
         """
         ret, frame = self._cap.read()
+        attempt = 1
+        while not ret and attempt < max_retries:
+            ret, frame = self._cap.read()
+            attempt += 1
         if ret:
             frame = cv2.resize(frame, FRAME_SIZE)
             self.frames_read += 1
