@@ -1,9 +1,9 @@
 [submodule "source_manager"]
 	path = source_manager
 	url = https://github.com/TLMOS/svr_source_manager
-[submodule "svr_ml_processing_pool"]
-	path = svr_ml_processing_pool
+[submodule "ml_processing_pool"]
+	path = ml_processing_pool
 	url = https://github.com/TLMOS/svr_ml_processing_pool
-[submodule "svr_search_engine"]
-	path = svr_search_engine
+[submodule "search_engine"]
+	path = search_engine
 	url = https://github.com/TLMOS/svr_search_engine
