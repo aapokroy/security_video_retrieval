@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management-alpine
+    container_name: svr_rabbitmq
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 5673:5672
+      - 15672:15672
+    restart: unless-stopped
