@@ -1,9 +1,12 @@
 [submodule "search_engine"]
 	path = search_engine
 	url = https://github.com/TLMOS/svr_search_engine
+	branch = master
 [submodule "ml_processing"]
 	path = ml_processing
 	url = https://github.com/TLMOS/svr_ml_processing
+	branch = master
 [submodule "source_manager"]
 	path = source_manager
 	url = https://github.com/TLMOS/svr_source_manager
+	branch = master
