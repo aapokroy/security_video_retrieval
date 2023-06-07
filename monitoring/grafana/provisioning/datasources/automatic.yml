@@ -16,3 +16,4 @@ datasources:
   uid: ipSMPtlVz
   url: http://prometheus:9090
   user: ''
+  editable: true

@@ -3,6 +3,6 @@ env
 .vscode
 **.ipynb
 
-*.local.*
+*.local*
 
 tests

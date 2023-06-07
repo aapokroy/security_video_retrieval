@@ -12,10 +12,11 @@ services:
     container_name: svr_monitoring_prometheus
     restart: unless-stopped
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/etc/prometheus
       - svr_prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+      # - '--web.config.file=/etc/prometheus/web.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
@@ -30,8 +31,7 @@ services:
     volumes:
       - svr_grafana_data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/rabbitmq.yaml
-      - ./grafana/dashboards:/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     environment:  
       - GF_LOG_LEVEL="warning"
     ports:
