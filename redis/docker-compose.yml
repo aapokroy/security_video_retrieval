@@ -7,11 +7,11 @@ volumes:
 services:
   redis:
     image: redis/redis-stack:latest
-    container_name: svr-se-redis
+    container_name: svr-redis
     restart: unless-stopped
     volumes:
       - ./redis-stack.conf:/redis-stack.conf
-      - ./ssl:/etc/ssl
+      - ./users.acl:/users.acl
       - svr_redis_data:/data
     ports:
       - 6379:6379
@@ -19,12 +19,14 @@ services:
 
   redis-exporter:
     image: oliver006/redis_exporter
-    container_name: svr-se-redis-exporter
+    container_name: svr-redis-exporter
     restart: unless-stopped
+    volumes:
+      - ./exporter:/etc/exporter
     command:
       - '--redis.addr=redis:6379'
       - '--redis.user=exporter'
-      - '--redis.password=5aaf910640f9c0f1388b9ea027f1f730948ef674a1d68db24bfd2c5b321d5c9d'
+      - '--redis.password-file=/etc/exporter/password.json'
     ports:
       - 9121:9121
     depends_on:
