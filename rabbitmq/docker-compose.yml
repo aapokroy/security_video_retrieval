@@ -7,7 +7,7 @@ volumes:
 services:
   rabbitmq:
     image: rabbitmq:3.11-management-alpine
-    container_name: svr-rabbitmq
+    container_name: svr_rabbitmq
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - ./definitions.json:/etc/rabbitmq/definitions.json

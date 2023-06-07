@@ -3,7 +3,6 @@ env
 .vscode
 **.ipynb
 
-redis/exporter
-redis/users.acl
+*.local.*
 
 tests

@@ -1,0 +1,3 @@
+user default off
+user worker on +@all ~* >password
+user exporter on +@all ~* >password
