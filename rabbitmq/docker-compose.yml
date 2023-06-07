@@ -1,13 +1,21 @@
-version: "3.9"
+version: '3.9'
+
+volumes:
+  svr_rabbitmq_data:
+    external: true
 
 services:
   rabbitmq:
     image: rabbitmq:3.11-management-alpine
-    container_name: svr_rabbitmq
+    container_name: svr-rabbitmq
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - ./rabbitmq:/var/lib/rabbitmq
+      - ./definitions.json:/etc/rabbitmq/definitions.json
+      - svr_rabbitmq_data:/var/lib/rabbitmq
+    environment:
+       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
     ports:
       - 5673:5672
       - 15672:15672
+      - 15692:15692
     restart: unless-stopped

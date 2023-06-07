@@ -1,5 +1,6 @@
 __pycache__
 env
 .vscode
-*.ipynb
-rabbitmq/rabbitmq
+**.ipynb
+
+tests
