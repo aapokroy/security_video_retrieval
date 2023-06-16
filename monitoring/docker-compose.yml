@@ -2,9 +2,9 @@ version: '3.9'
 
 volumes:
   svr_prometheus_data:
-    external: true
+    external: false
   svr_grafana_data:
-    external: true
+    external: false
 
 services:
   prometheus:
@@ -30,9 +30,10 @@ services:
     restart: unless-stopped
     volumes:
       - svr_grafana_data:/var/lib/grafana
+      - ./grafana/config.ini:/etc/grafana/grafana.ini
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
-    environment:  
+    environment:
       - GF_LOG_LEVEL="warning"
     ports:
       - 3000:3000
