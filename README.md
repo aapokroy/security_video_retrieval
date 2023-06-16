@@ -55,7 +55,7 @@ Recommended deployment order:
 ## Demo
 Demo version of the project is available at [svr.tlmos.tech](https://svr.tlmos.tech). It has limited amount of resources, so be patient if it doesn't work.
 
-Guest username: `source_manager_1`
+Guest username: `source_manager_2`
 Guest password: `11111111`
 
 You can also create your own account and deploy your own source manager. You can find deployment instructions in the README file of source manager repository.
