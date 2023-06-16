@@ -29,10 +29,6 @@ scrape_configs:
   static_configs:
   - targets: ['0.0.0.0:9121']
 
-- job_name: 'search_engine'
-  static_configs:
-  - targets: ['0.0.0.0:8080']
-
 - job_name: 'ml_processing'
   honor_labels: true
   static_configs:
