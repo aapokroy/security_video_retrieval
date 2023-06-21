@@ -1,7 +1,7 @@
 version: '3.9'
 
 volumes:
-  svr_rabbitmq_data:
+  rabbitmq_data:
     external: false
 
 services:
@@ -11,7 +11,7 @@ services:
     volumes:
       - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - ./definitions.json:/etc/rabbitmq/definitions.json
-      - svr_rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_data:/var/lib/rabbitmq
     environment:
        - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
     ports:

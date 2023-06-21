@@ -1,7 +1,7 @@
 version: '3.9'
 
 volumes:
-  svr_redis_data:
+  redis_data:
     external: false
 
 services:
@@ -12,7 +12,7 @@ services:
     volumes:
       - ./redis-stack.conf:/redis-stack.conf
       - ./users.acl:/users.acl
-      - svr_redis_data:/data
+      - redis_data:/data
     ports:
       - 6379:6379
       - 8001:8001

@@ -52,10 +52,16 @@ Recommended deployment order:
 5. [Monitoring](monitoring/README.md)
 6. [Source Manager](https://github.com/TLMOS/svr_source_manager)
 
+> Or if you want to deploy the whole system at once, on a single machine, you can use the docker-compose at the root of this repository.
+Just clone this repository with all submodules and run:
+> ```bash
+> docker-compose up --build -d
+> ```
+
 ## Demo
 Demo version of the project is available at [svr.tlmos.tech](https://svr.tlmos.tech). It has limited amount of resources, so be patient if it doesn't work.
 
-Guest username: `svr_guest`
+Guest username: `svr_guest`  
 Guest password: `svr_guest`
 
 You can also create your own account and deploy your own source manager. You can find deployment instructions in the README file of source manager repository.

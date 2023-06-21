@@ -1,9 +1,9 @@
 version: '3.9'
 
 volumes:
-  svr_prometheus_data:
+  prometheus_data:
     external: false
-  svr_grafana_data:
+  grafana_data:
     external: false
 
 services:
@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./prometheus:/etc/prometheus
-      - svr_prometheus_data:/prometheus
+      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       # - '--web.config.file=/etc/prometheus/web.yml'
@@ -29,7 +29,7 @@ services:
     container_name: svr_monitoring_grafana
     restart: unless-stopped
     volumes:
-      - svr_grafana_data:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./grafana/config.ini:/etc/grafana/grafana.ini
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards

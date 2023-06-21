@@ -1,0 +1,127 @@
+version: '3.9'
+
+volumes:
+  rabbitmq_data:
+    external: false
+  redis_data:
+    external: false
+  huggingface_cache:
+    external: false
+  video_data:
+    external: false
+  postgres_data:
+    external: false
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.11-management-alpine
+    container_name: svr_rabbitmq
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+       - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"
+    ports:
+      - 15672:15672
+    restart: unless-stopped
+
+  redis:
+    image: redis/redis-stack:latest
+    container_name: svr_redis
+    restart: unless-stopped
+    volumes:
+      - ./redis/redis-stack.conf:/redis-stack.conf
+      - ./redis/users.acl:/users.acl
+      - redis_data:/data
+    ports:
+      - 8001:8001
+
+  encoder:
+    build:
+      context: ./search_engine
+      dockerfile: services/encoder/Dockerfile
+    container_name: svr_se_encoder
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface/hub/
+    depends_on:
+      - redis
+
+  web:
+    build:
+      context: ./search_engine
+      dockerfile: services/web/Dockerfile
+    container_name: svr_se_web
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - ./search_engine/static:/home/app/static
+    depends_on:
+      - encoder
+    ports:
+      - 8080:8080
+
+  ml_processing_detector:
+    build:
+      context: ./ml_processing
+      dockerfile: services/detector/Dockerfile
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - ./ml_processing/models:/home/models
+    depends_on:
+      - redis
+      - rabbitmq
+
+  ml_processing_encoder:
+    build:
+      context: ./ml_processing
+      dockerfile: services/encoder/Dockerfile
+    restart: unless-stopped
+    env_file: ./.env
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface/hub/
+    depends_on:
+      - redis
+      - rabbitmq
+
+  postgres:
+    image: postgres:15.2-alpine
+    container_name: svr_sm_db
+    restart: unless-stopped
+    volumes:
+      - ./source_manager/services/postgres/init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_PASSWORD: postgres
+
+  api:
+    build:
+      context: ./source_manager
+      dockerfile: services/api/Dockerfile
+    container_name: svr_sm_api
+    restart: unless-stopped
+    volumes:
+      - video_data:/home/video_data
+      - ./source_manager/credentials:/home/credentials
+    env_file: ./.env
+    depends_on:
+      - postgres
+      - web
+
+  source_processor:
+    build:
+      context: ./source_manager
+      dockerfile: services/source_processor/Dockerfile
+    container_name: svr_sm_source_processor
+    restart: unless-stopped
+    volumes:
+      - video_data:/home/video_data
+      - ./source_manager/credentials:/home/credentials
+    env_file: ./.env
+    depends_on:
+      - postgres
+      - rabbitmq
